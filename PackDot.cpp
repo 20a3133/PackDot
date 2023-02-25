@@ -1,9 +1,9 @@
 #include "DxLib.h"
-int player[8], player2[8], chip[7], enemy[2], enemy1, enemy2;	//01, 04, 09, 10
+int player[8], player2[8], chip[7], enemy[2], enemy1, enemy2;
 int px = 1, py = 1;	//プレイヤーの位置
-int ex = 13, ey = 18;	//敵の位置	04
-int ex1 = 1, ey1 = 18;	//敵の位置	2-09
-int ex2 = 18, ey2 = 1;	//敵の位置	2-09
+int ex = 13, ey = 18;	//敵の位置
+int ex1 = 1, ey1 = 18;	//敵の位置	
+int ex2 = 18, ey2 = 1;	//敵の位置	
 int status = -1;		//ゲームの状態　－１：スタート，０：プレイ，１：ＧａｍｅＯｖｅｒ，２：ＧａｍｅＣｌｅａｒ
 int map[15][20];
 int map1[15][20] = {
@@ -74,17 +74,17 @@ int map4[15][20] = {
 	{1,0,0,0,2,5,2,5,2,2,3,2,2,5,2,5,0,0,0,1},
 	{1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,1,1,1,1,1},
 };
-int score = 0;	//02
-int esa_num_yellow = 0, esa_num_red = 0/*, esa_num_green = 0*/;	//07
-int p_dir = 0, p_bite = 0;		//09：Playerの向き, 10:Playerの口
+int score = 0;	
+int esa_num_yellow = 0, esa_num_red = 0/*, esa_num_green = 0*/;
+int p_dir = 0, p_bite = 0;		
 int enemy_color = 0;
-int eat_sound, eat_sound2, eat_sound3, eat_sound4, tairu_sound, tekieat_sound;	//12
+int eat_sound, eat_sound2, eat_sound3, eat_sound4, tairu_sound, tekieat_sound;
 int timer = 0;				//無敵餌を食べた時のタイマー
 int play_flag = 0;			//ゲームプレイ中のフラグ（無敵状態の時と通常時の判定など）
 int sousa_flag = 0;         //操作変更餌
 int player_flag = 0;        //スキン変更
 
-void sound_get(void) {	//12
+void sound_get(void) {	
 	eat_sound = LoadSoundMem("./music/eat.mp3"); //普通餌
 	eat_sound2 = LoadSoundMem("./music/powerup.mp3"); //無敵餌
 	eat_sound3 = LoadSoundMem("./music/sousa.mp3"); //操作反転餌
@@ -93,7 +93,7 @@ void sound_get(void) {	//12
 	tekieat_sound = LoadSoundMem("./music/tekieat.mp3"); //敵食べる
 }
 
-void esa_count(void) {	//07
+void esa_count(void) {	
 	for (int y = 0; y < 15; y++) {
 		for (int x = 0; x < 20; x++) {
 			if (map[y][x] == 2) esa_num_yellow++;
@@ -103,49 +103,50 @@ void esa_count(void) {	//07
 }
 
 void Gazo(void) {	//画像取り込み関数
-	//player = LoadGraph("./images/player1.png");					//09
-	//LoadDivGraph("./images/player2.png", 4, 4, 1, 32, 32, player);	//09
-	LoadDivGraph("./images/player3.png", 8, 4, 2, 32, 32, player);	//10
-	LoadDivGraph("./images/player3'.png", 8, 4, 2, 32, 32, player2);	//10
-	LoadDivGraph("./images/chip3.jpg", 7, 7, 1, 32, 32, chip);	//01
+	//player = LoadGraph("./images/player1.png");					
+	//LoadDivGraph("./images/player2.png", 4, 4, 1, 32, 32, player);	
+	LoadDivGraph("./images/player3.png", 8, 4, 2, 32, 32, player);	
+	LoadDivGraph("./images/player3'.png", 8, 4, 2, 32, 32, player2);
+	LoadDivGraph("./images/chip3.jpg", 7, 7, 1, 32, 32, chip);	
 	enemy1 = LoadGraph("./images/enemy.png");		//04
 	enemy2 = LoadGraph("./images/enemy3.png");
-	LoadDivGraph("./images/enemy2.png", 2, 2, 1, 32, 32, enemy);	//01
+	LoadDivGraph("./images/enemy2.png", 2, 2, 1, 32, 32, enemy);	
 }
 
 void Hyoji(void) {	//表示関数
-	for (int y = 0; y < 15; y++) {	//01
+	for (int y = 0; y < 15; y++) {	
 		for (int x = 0; x < 20; x++) {
 			DrawGraph(x * 32, y * 32, chip[map[y][x]], FALSE);
 		}
 	}
-	//DrawGraph(px * 32, py * 32, player[p_dir], FALSE);			//09
-	if(player_flag == 0) DrawGraph(px * 32, py * 32, player[p_dir + p_bite * 4], FALSE);			//10
+	if(player_flag == 0) DrawGraph(px * 32, py * 32, player[p_dir + p_bite * 4], FALSE);
 	else DrawGraph(px * 32, py * 32, player2[p_dir + p_bite * 4], FALSE);
-	DrawGraph(ex * 32, ey * 32, enemy[enemy_color = 1 - enemy_color], FALSE);		//04
-	DrawGraph(ex1 * 32, ey1 * 32, enemy1, FALSE);		//04
-	DrawGraph(ex2 * 32, ey2 * 32, enemy2, FALSE);		//04
-	DrawFormatString(0, 0, GetColor(255, 255, 255), "SCORE : %d", score);	//02
-	DrawFormatString(500, 0, GetColor(255, 255, 255), "TIMER : %d", timer);	//02
+	DrawGraph(ex * 32, ey * 32, enemy[enemy_color = 1 - enemy_color], FALSE);
+	DrawGraph(ex1 * 32, ey1 * 32, enemy1, FALSE);
+	DrawGraph(ex2 * 32, ey2 * 32, enemy2, FALSE);
+	DrawFormatString(0, 0, GetColor(255, 255, 255), "SCORE : %d", score);
+	DrawFormatString(500, 0, GetColor(255, 255, 255), "TIMER : %d", timer);
 	WaitTimer(80);
 }
 
 void Player(void) {	//プレイヤーの動き関数
-	int tmpx = px, tmpy = py;	//03
+	int tmpx = px, tmpy = py;
 	if (sousa_flag == 0) {
 		if (CheckHitKey(KEY_INPUT_LEFT)) {
 			px--;
-			//if (px < 0) px = 19;
 			p_dir = 2;
-		}		//2-06
+		}
 		if (CheckHitKey(KEY_INPUT_RIGHT)) {
 			px++;
-			//if (px > 19) px = 0;
 			p_dir = 0;
-		}		//2-06
-		if (CheckHitKey(KEY_INPUT_UP)) { py--; p_dir = 3; }			//09
-		if (CheckHitKey(KEY_INPUT_DOWN)) { py++; p_dir = 1; }		//09
-		if (map[py][px] == 1) {	//03
+		}
+		if (CheckHitKey(KEY_INPUT_UP)) { 
+			py--; p_dir = 3; 
+		}
+		if (CheckHitKey(KEY_INPUT_DOWN)) {
+			py++; p_dir = 1; 
+		}
+		if (map[py][px] == 1) {
 			px = tmpx;
 			py = tmpy;
 		}
@@ -169,15 +170,15 @@ void Player(void) {	//プレイヤーの動き関数
 			px++;
 			if (px < 0) px = 19;
 			p_dir = 0;
-		}		//2-06
+		}
 		if (CheckHitKey(KEY_INPUT_RIGHT)) {
 			px--;
 			if (px > 19) px = 0;
 			p_dir = 2;
-		}		//2-06
-		if (CheckHitKey(KEY_INPUT_UP)) { py++; p_dir = 1; }			//09
-		if (CheckHitKey(KEY_INPUT_DOWN)) { py--; p_dir = 3; }		//09
-		if (map[py][px] == 1) {	//03
+		}	
+		if (CheckHitKey(KEY_INPUT_UP)) { py++; p_dir = 1; }	
+		if (CheckHitKey(KEY_INPUT_DOWN)) { py--; p_dir = 3; }	
+		if (map[py][px] == 1) {	
 			px = tmpx;
 			py = tmpy;
 		}
@@ -195,27 +196,27 @@ void Player(void) {	//プレイヤーの動き関数
 			py = 0;
 		}
 	}
-	p_bite = 1 - p_bite;		//10
+	p_bite = 1 - p_bite;
 
 	
 }
 
-void atari(void) {	//02
-	if (map[py][px] == 2) { //普通餌
+void atari(void) {
+	if (map[py][px] == 2) { 
 		map[py][px] = 0;
 		score += 20;
-		PlaySoundMem(eat_sound, DX_PLAYTYPE_BACK, TRUE);	//12
-		esa_num_yellow--;						//07
-		if (esa_num_yellow <= 0 && esa_num_red <= 0) status = 2;	//07
+		PlaySoundMem(eat_sound, DX_PLAYTYPE_BACK, TRUE);
+		esa_num_yellow--;
+		if (esa_num_yellow <= 0 && esa_num_red <= 0) status = 2;
 	}
 	if (map[py][px] == 3) { //無敵餌、敵食べる
 		map[py][px] = 0;
 		play_flag = 1;
 		player_flag = 1;
 		score += 100;
-		PlaySoundMem(eat_sound2, DX_PLAYTYPE_BACK, TRUE);	//12
-		esa_num_red--;						//07
-		if (esa_num_yellow <= 0 && esa_num_red <= 0) status = 2;	//07
+		PlaySoundMem(eat_sound2, DX_PLAYTYPE_BACK, TRUE);	
+		esa_num_red--;						
+		if (esa_num_yellow <= 0 && esa_num_red <= 0) status = 2;	
 	}
 	if (map[py][px] == 4) { //操作反転
 		map[py][px] = 0;
@@ -223,23 +224,23 @@ void atari(void) {	//02
 		PlaySoundMem(eat_sound3, DX_PLAYTYPE_BACK, TRUE);
 		sousa_flag += 1;
 		if (sousa_flag == 2) sousa_flag = 0;
-		if (esa_num_yellow <= 0 && esa_num_red <= 0) status = 2;	//07
+		if (esa_num_yellow <= 0 && esa_num_red <= 0) status = 2;	
 	}
 	if (map[py][px] == 5) { //減点餌
 		map[py][px] = 0;
 		score -= 50;
 		PlaySoundMem(eat_sound4, DX_PLAYTYPE_BACK, TRUE);
-		if (esa_num_yellow <= 0 && esa_num_red <= 0) status = 2;	//07
+		if (esa_num_yellow <= 0 && esa_num_red <= 0) status = 2;
 	}
 	if (map[py][px] == 6) { //敵強制移動
 		PlaySoundMem(tairu_sound, DX_PLAYTYPE_BACK, TRUE);
 		ex = 18; ey = 13;	
 		ex1 = 1; ey1 = 13;	
 		ex2 = 18; ey2 = 1;
-		if (esa_num_yellow <= 0 && esa_num_red <= 0) status = 2;	//07
+		if (esa_num_yellow <= 0 && esa_num_red <= 0) status = 2;
 	}
-	if (ex == px && ey == py && play_flag == 0) status = 1;	//08, 2-09
-	if (ex1 == px && ey1 == py && play_flag == 0) status = 1;	//08, 2-09
+	if (ex == px && ey == py && play_flag == 0) status = 1;	
+	if (ex1 == px && ey1 == py && play_flag == 0) status = 1;	
 	if (ex2 == px && ey2 == py && play_flag == 0) status = 1;
 
 	if (play_flag == 1) {
@@ -264,7 +265,7 @@ void atari(void) {	//02
 	}
 }
 
-void teki(void) {	//05
+void teki(void) {
 	int tmpx = ex, tmpy = ey;
 	if (GetRand(10) == 0) {
 		if (ex > px) ex--;
@@ -298,7 +299,7 @@ void teki(void) {	//05
 		ey = 0;
 	}
 }
-void teki1(void) {	//2-09
+void teki1(void) {
 	int tmpx = ex1, tmpy = ey1;
 	if (GetRand(10) == 0) {
 		if (ex1 > px) ex1--;
@@ -333,7 +334,7 @@ void teki1(void) {	//2-09
 	}
 }
 
-void teki2(void) {	//2-09
+void teki2(void) {
 	int tmpx = ex2, tmpy = ey2;
 	if (GetRand(10) == 0) {
 		if (ex2 > px) ex2--;
@@ -372,7 +373,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	DxLib_Init();
 	SetDrawScreen(DX_SCREEN_BACK);
 	Gazo();
-	sound_get();	//12
+	sound_get();
 	
 	while (status != -100) {
 		while (status == -1 && ProcessMessage() == 0 && ScreenFlip() == 0 && ClearDrawScreen() == 0) {
@@ -410,28 +411,28 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			}
 			esa_count();
 			px = 1;  py = 1;	//プレイヤーの位置
-			ex = 18; ey = 13;	//敵の位置	04
-			ex1 = 1; ey1 = 13;	//敵の位置	04
+			ex = 18; ey = 13;	//敵の位置
+			ex1 = 1; ey1 = 13;	//敵の位置
 			ex2 = 18; ey2 = 1;
 			sousa_flag = 0;
-			PlaySoundFile("./music/bgm.mp3", DX_PLAYTYPE_LOOP);	//11
+			PlaySoundFile("./music/bgm.mp3", DX_PLAYTYPE_LOOP);
 		}
 
 		while (status == 0 && ProcessMessage() == 0 && ScreenFlip() == 0 && ClearDrawScreen() == 0) {
 			if (play_flag == 0) {
 				Player();
-				teki();		//05
-				teki1();		//05
+				teki();		
+				teki1();	
 				teki2();
-				atari();	//02
+				atari();	
 				Hyoji();
 			}
 			else if (play_flag == 1) {
 				Player();
-				teki();		//05
-				teki1();		//05
+				teki();		
+				teki1();	
 				teki2();
-				atari();	//02
+				atari();	
 				Hyoji();
 				timer++;
 				if (timer >= 200) {
@@ -472,7 +473,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			}
 			if (CheckHitKey(KEY_INPUT_ESCAPE)) status = -100;
 		}
-		//	StopSoundFile();
 	}
 	DxLib_End();
 	return 0;
